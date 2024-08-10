@@ -11,7 +11,9 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: '`user`')]
 #[ORM\HasLifecycleCallbacks]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -28,26 +30,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $lastName = null;
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 180)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255, unique: true)]
-    private ?string $username = null;
-
+    /**
+     * @var list<string> The user roles
+     */
     #[ORM\Column]
-    private ?array $roles = [];
+    private array $roles = [];
 
     /**
      * @var string The hashed password
      */
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column]
-    private ?bool $isVerified = false;
-
-    #[ORM\Column]
-    private ?bool $isActive = false;
+    #[ORM\Column(type: 'boolean')]
+    private $status;
 
     #[ORM\Column(length: 255)]
     private ?string $phone = null;
@@ -76,8 +75,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Announcement::class)]
     private Collection $announcements;
 
-    public function __construct()
+    public function __construct($name, $email, $password)
     {
+        $this->name = $name;
+        $this->email = $email;
+        $this->password = $password;
+        $this->roles = ['ROLE_USER'];
+        $this->status = true;
         $this->flats = new ArrayCollection();
         $this->userFlatHistories = new ArrayCollection();
         $this->payerTransactions = new ArrayCollection();
@@ -136,18 +140,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): static
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
     /**
      * A visual identifier that represents this user.
      *
@@ -160,17 +152,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @see UserInterface
+     *
+     * @return list<string>
      */
     public function getRoles(): array
     {
         $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
 
+    /**
+     * @param list<string> $roles
+     */
     public function setRoles(array $roles): static
     {
-        $this->roles = count($roles) > 0 ? $roles : ["ROLE_USER"];
+        $this->roles = $roles;
 
         return $this;
     }
@@ -190,6 +189,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
     /**
      * @see UserInterface
      */
@@ -199,28 +210,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    public function isVerified(): bool
+    public function getUsername(): string
     {
-        return $this->isVerified;
-    }
-
-    public function setIsVerified(bool $isVerified): static
-    {
-        $this->isVerified = $isVerified;
-
-        return $this;
-    }
-
-    public function isActive(): bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): static
-    {
-        $this->isActive = $isActive;
-
-        return $this;
+        return $this->email;
     }
 
     public function getPhone(): ?string
