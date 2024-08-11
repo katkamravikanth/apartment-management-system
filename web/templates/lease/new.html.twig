@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Lease{% endblock %}
+
+{% block body %}
+    <h1>Create new Lease</h1>
+
+    {{ include('lease/_form.html.twig') }}
+
+    <a href="{{ path('app_lease_index') }}">back to list</a>
+{% endblock %}

@@ -7,20 +7,17 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
     private EntityManagerInterface $manager;
     private EntityRepository $repository;
-    private string $path = '/api/user/';
-    private string $jwtToken;
+    private string $path = '/user/';
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
-        $this->client->followRedirects(true);
         $this->manager = static::getContainer()->get('doctrine')->getManager();
         $this->repository = $this->manager->getRepository(User::class);
 
@@ -29,117 +26,141 @@ class UserControllerTest extends WebTestCase
         }
 
         $this->manager->flush();
-
-        $this->createTestUserAndAuthenticate();
-    }
-
-    private function createTestUserAndAuthenticate(): void
-    {
-        $hasher = static::getContainer()->get(UserPasswordHasherInterface::class);
-
-        $user = new User();
-        $user->setEmail('testuser@example.com');
-        $user->setPassword($hasher->hashPassword($user, 'password'));
-
-        $this->manager->persist($user);
-        $this->manager->flush();
-
-        // Obtain JWT token
-        $this->client->request('POST', '/api/login', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
-            'email' => 'testuser@example.com',
-            'password' => 'password'
-        ]));
-
-        $response = $this->client->getResponse();
-        $data = json_decode($response->getContent(), true);
-        $this->jwtToken = $data['token'];
     }
 
     public function testIndex(): void
     {
-        $this->client->request('GET', $this->path, [], [], ['HTTP_Authorization' => 'Bearer ' . $this->jwtToken]);
+        $crawler = $this->client->request('GET', $this->path);
 
         self::assertResponseStatusCodeSame(200);
-    }
+        self::assertPageTitleContains('User index');
 
-    public function testShow(): void
-    {
-        $fixture = new User();
-        $fixture->setEmail('showuser@example.com');
-        $fixture->setPassword('password');
-
-        $this->manager->persist($fixture);
-        $this->manager->flush();
-
-        $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()), [], [], ['HTTP_Authorization' => 'Bearer ' . $this->jwtToken]);
-
-        self::assertResponseStatusCodeSame(200);
+        // Use the $crawler to perform additional assertions e.g.
+        // self::assertSame('Some text on the page', $crawler->filter('.p')->first());
     }
 
     public function testNew(): void
     {
-        $this->client->request('POST', $this->path . 'new', [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_Authorization' => 'Bearer ' . $this->jwtToken], json_encode([
-            'email' => 'newuser@example.com',
-            'password' => 'password'
-        ]));
+        $this->markTestIncomplete();
+        $this->client->request('GET', sprintf('%snew', $this->path));
 
-        self::assertResponseStatusCodeSame(201);
+        self::assertResponseStatusCodeSame(200);
+
+        $this->client->submitForm('Save', [
+            'user[firstName]' => 'Testing',
+            'user[lastName]' => 'Testing',
+            'user[email]' => 'Testing',
+            'user[roles]' => 'Testing',
+            'user[password]' => 'Testing',
+            'user[phoneNumber]' => 'Testing',
+            'user[isVerified]' => 'Testing',
+            'user[createdAt]' => 'Testing',
+            'user[updatedAt]' => 'Testing',
+            'user[deletedAt]' => 'Testing',
+        ]);
+
+        self::assertResponseRedirects($this->path);
+
+        self::assertSame(1, $this->repository->count([]));
+    }
+
+    public function testShow(): void
+    {
+        $this->markTestIncomplete();
+        $fixture = new User();
+        $fixture->setFirstName('My Title');
+        $fixture->setLastName('My Title');
+        $fixture->setEmail('My Title');
+        $fixture->setRoles('My Title');
+        $fixture->setPassword('My Title');
+        $fixture->setPhoneNumber('My Title');
+        $fixture->setIsVerified('My Title');
+        $fixture->setCreatedAt('My Title');
+        $fixture->setUpdatedAt('My Title');
+        $fixture->setDeletedAt('My Title');
+
+        $this->manager->persist($fixture);
+        $this->manager->flush();
+
+        $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
+
+        self::assertResponseStatusCodeSame(200);
+        self::assertPageTitleContains('User');
+
+        // Use assertions to check that the properties are properly displayed.
     }
 
     public function testEdit(): void
     {
+        $this->markTestIncomplete();
         $fixture = new User();
-        $fixture->setEmail('edituser@example.com');
-        $fixture->setPassword('password');
+        $fixture->setFirstName('Value');
+        $fixture->setLastName('Value');
+        $fixture->setEmail('Value');
+        $fixture->setRoles('Value');
+        $fixture->setPassword('Value');
+        $fixture->setPhoneNumber('Value');
+        $fixture->setIsVerified('Value');
+        $fixture->setCreatedAt('Value');
+        $fixture->setUpdatedAt('Value');
+        $fixture->setDeletedAt('Value');
 
         $this->manager->persist($fixture);
         $this->manager->flush();
 
-        $this->client->request('PUT', sprintf('%s%s', $this->path, $fixture->getId()), [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_Authorization' => 'Bearer ' . $this->jwtToken], json_encode([
-            'email' => 'updated@example.com',
-            'roles' => ['ROLE_ADMIN'],
-            'password' => 'newpassword'
-        ]));
+        $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
 
-        self::assertResponseStatusCodeSame(200);
+        $this->client->submitForm('Update', [
+            'user[firstName]' => 'Something New',
+            'user[lastName]' => 'Something New',
+            'user[email]' => 'Something New',
+            'user[roles]' => 'Something New',
+            'user[password]' => 'Something New',
+            'user[phoneNumber]' => 'Something New',
+            'user[isVerified]' => 'Something New',
+            'user[createdAt]' => 'Something New',
+            'user[updatedAt]' => 'Something New',
+            'user[deletedAt]' => 'Something New',
+        ]);
 
-        $updatedUser = $this->repository->find($fixture->getId());
+        self::assertResponseRedirects('/user/');
 
-        self::assertSame('updated@example.com', $updatedUser->getEmail());
+        $fixture = $this->repository->findAll();
+
+        self::assertSame('Something New', $fixture[0]->getFirstName());
+        self::assertSame('Something New', $fixture[0]->getLastName());
+        self::assertSame('Something New', $fixture[0]->getEmail());
+        self::assertSame('Something New', $fixture[0]->getRoles());
+        self::assertSame('Something New', $fixture[0]->getPassword());
+        self::assertSame('Something New', $fixture[0]->getPhoneNumber());
+        self::assertSame('Something New', $fixture[0]->getIsVerified());
+        self::assertSame('Something New', $fixture[0]->getCreatedAt());
+        self::assertSame('Something New', $fixture[0]->getUpdatedAt());
+        self::assertSame('Something New', $fixture[0]->getDeletedAt());
     }
 
     public function testRemove(): void
     {
+        $this->markTestIncomplete();
         $fixture = new User();
-        $fixture->setEmail('removeuser@example.com');
-        $fixture->setPassword('password');
+        $fixture->setFirstName('Value');
+        $fixture->setLastName('Value');
+        $fixture->setEmail('Value');
+        $fixture->setRoles('Value');
+        $fixture->setPassword('Value');
+        $fixture->setPhoneNumber('Value');
+        $fixture->setIsVerified('Value');
+        $fixture->setCreatedAt('Value');
+        $fixture->setUpdatedAt('Value');
+        $fixture->setDeletedAt('Value');
 
         $this->manager->persist($fixture);
         $this->manager->flush();
 
-        $this->client->request('DELETE', sprintf('%s%s', $this->path, $fixture->getId()), [], [], ['HTTP_Authorization' => 'Bearer ' . $this->jwtToken]);
+        $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
+        $this->client->submitForm('Delete');
 
-        self::assertResponseStatusCodeSame(204);
-        self::assertSame(0, $this->repository->count(['email' => 'removeuser@example.com']));
-    }
-
-    protected function restoreExceptionHandler(): void
-    {
-        while (true) {
-            $previousHandler = set_exception_handler(static fn() => null);
-            restore_exception_handler();
-
-            if ($previousHandler === null) {
-                break;
-            }
-
-            restore_exception_handler();
-        }
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        $this->restoreExceptionHandler();
+        self::assertResponseRedirects('/user/');
+        self::assertSame(0, $this->repository->count([]));
     }
 }

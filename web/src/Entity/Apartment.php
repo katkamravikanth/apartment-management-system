@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ApartmentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ApartmentRepository::class)]
@@ -22,55 +23,39 @@ class Apartment
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $address_1 = null;
+    private ?string $address = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $address_2 = null;
+    #[ORM\Column]
+    private ?int $size = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $village = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 0)]
+    private ?string $rentAmount = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $mandal = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $city = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $state = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $country = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $pincode = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $contact_number = null;
-
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?User $president = null;
-
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?User $secretary = null;
-
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?User $tresurer = null;
-
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?User $security = null;
-
-    #[ORM\OneToMany(mappedBy: 'apartment', targetEntity: Flat::class)]
-    private Collection $flats;
-
+    #[ORM\ManyToOne(targetEntity: Building::class, inversedBy: 'apartments')]
+    private ?Building $building = null;
+    
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'apartments')]
+    private ?User $owner = null;
+    
+    #[ORM\OneToMany(targetEntity: Lease::class, mappedBy: 'apartment')]
+    private Collection $leases;
+    
+    #[ORM\OneToMany(targetEntity: Payment::class, mappedBy: 'apartment')]
+    private Collection $payments;
+    
+    #[ORM\OneToMany(targetEntity: MaintenanceRequest::class, mappedBy: 'apartment')]
+    private Collection $maintenanceRequests;
+    
+    #[ORM\OneToMany(targetEntity: Document::class, mappedBy: 'apartment')]
+    private Collection $documents;
+    
+    // Constructor to initialize the collections
     public function __construct()
     {
-        $this->flats = new ArrayCollection();
-    }
-
-    public function __toString()
-    {
-        return $this->name;
+        $this->leases = new ArrayCollection();
+        $this->payments = new ArrayCollection();
+        $this->maintenanceRequests = new ArrayCollection();
+        $this->documents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -90,188 +75,62 @@ class Apartment
         return $this;
     }
 
-    public function getAddress1(): ?string
+    public function getAddress(): ?string
     {
-        return $this->address_1;
+        return $this->address;
     }
 
-    public function setAddress1(string $address_1): static
+    public function setAddress(string $address): static
     {
-        $this->address_1 = $address_1;
+        $this->address = $address;
 
         return $this;
     }
 
-    public function getAddress2(): ?string
+    public function getSize(): ?int
     {
-        return $this->address_2;
+        return $this->size;
     }
 
-    public function setAddress2(?string $address_2): static
+    public function setSize(int $size): static
     {
-        $this->address_2 = $address_2;
+        $this->size = $size;
 
         return $this;
     }
 
-    public function getVillage(): ?string
+    public function getRentAmount(): ?string
     {
-        return $this->village;
+        return $this->rentAmount;
     }
 
-    public function setVillage(?string $village): static
+    public function setRentAmount(string $rentAmount): static
     {
-        $this->village = $village;
+        $this->rentAmount = $rentAmount;
 
         return $this;
     }
 
-    public function getMandal(): ?string
+    public function getOwner(): ?User
     {
-        return $this->mandal;
+        return $this->owner;
     }
 
-    public function setMandal(?string $mandal): static
+    public function setOwner(?User $owner): self
     {
-        $this->mandal = $mandal;
+        $this->owner = $owner;
 
         return $this;
     }
 
-    public function getCity(): ?string
+    public function getBuilding(): ?Building
     {
-        return $this->city;
+        return $this->building;
     }
 
-    public function setCity(string $city): static
+    public function setBuilding(?Building $building): self
     {
-        $this->city = $city;
-
-        return $this;
-    }
-
-    public function getState(): ?string
-    {
-        return $this->state;
-    }
-
-    public function setState(string $state): static
-    {
-        $this->state = $state;
-
-        return $this;
-    }
-
-    public function getCountry(): ?string
-    {
-        return $this->country;
-    }
-
-    public function setCountry(string $country): static
-    {
-        $this->country = $country;
-
-        return $this;
-    }
-
-    public function getPincode(): ?string
-    {
-        return $this->pincode;
-    }
-
-    public function setPincode(string $pincode): static
-    {
-        $this->pincode = $pincode;
-
-        return $this;
-    }
-
-    public function getContactNumber(): ?string
-    {
-        return $this->contact_number;
-    }
-
-    public function setContactNumber(string $contact_number): static
-    {
-        $this->contact_number = $contact_number;
-
-        return $this;
-    }
-
-    public function getPresident(): ?User
-    {
-        return $this->president;
-    }
-
-    public function setPresident(?User $president): static
-    {
-        $this->president = $president;
-
-        return $this;
-    }
-
-    public function getSecretary(): ?User
-    {
-        return $this->secretary;
-    }
-
-    public function setSecretary(?User $secretary): static
-    {
-        $this->secretary = $secretary;
-
-        return $this;
-    }
-
-    public function getTresurer(): ?User
-    {
-        return $this->tresurer;
-    }
-
-    public function setTresurer(?User $tresurer): static
-    {
-        $this->tresurer = $tresurer;
-
-        return $this;
-    }
-
-    public function getSecurity(): ?User
-    {
-        return $this->security;
-    }
-
-    public function setSecurity(?User $security): static
-    {
-        $this->security = $security;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Flat>
-     */
-    public function getFlats(): Collection
-    {
-        return $this->flats;
-    }
-
-    public function addFlat(Flat $flat): static
-    {
-        if (!$this->flats->contains($flat)) {
-            $this->flats->add($flat);
-            $flat->setApartment($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFlat(Flat $flat): static
-    {
-        if ($this->flats->removeElement($flat)) {
-            // set the owning side to null (unless already changed)
-            if ($flat->getApartment() === $this) {
-                $flat->setApartment(null);
-            }
-        }
+        $this->building = $building;
 
         return $this;
     }

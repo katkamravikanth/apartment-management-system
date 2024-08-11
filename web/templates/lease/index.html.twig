@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lease index{% endblock %}
+
+{% block body %}
+    <h1>Lease index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>StartDate</th>
+                <th>EndDate</th>
+                <th>RentAmount</th>
+                <th>SecurityDeposit</th>
+                <th>CreatedAt</th>
+                <th>UpdatedAt</th>
+                <th>DeletedAt</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for lease in leases %}
+            <tr>
+                <td>{{ lease.id }}</td>
+                <td>{{ lease.startDate ? lease.startDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ lease.endDate ? lease.endDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ lease.rentAmount }}</td>
+                <td>{{ lease.securityDeposit }}</td>
+                <td>{{ lease.createdAt ? lease.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ lease.updatedAt ? lease.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ lease.deletedAt ? lease.deletedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_lease_show', {'id': lease.id}) }}">show</a>
+                    <a href="{{ path('app_lease_edit', {'id': lease.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="9">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_lease_new') }}">Create new</a>
+{% endblock %}

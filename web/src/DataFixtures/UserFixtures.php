@@ -3,14 +3,11 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
-use App\Entity\UserType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Faker\Factory;
 
-class UserFixtures extends Fixture implements DependentFixtureInterface
+class UserFixtures extends Fixture
 {
     private $passwordHasher;
 
@@ -19,39 +16,47 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $this->passwordHasher = $passwordHasher;
     }
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
-        $faker = Factory::create();
+        // Create an admin user
+        $admin = new User();
+        $admin->setFirstName('Admin');
+        $admin->setLastName('User');
+        $admin->setEmail('admin@example.com');
+        $admin->setRoles(['ROLE_ADMIN']);
+        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'adminpassword'));
+        $admin->setPhoneNumber('1234567890');
+        $admin->setVerified(true);
+        $manager->persist($admin);
 
-        $user = new User(
-            $faker->firstName,
-            $faker->lastName,
-            $faker->email,
-            $this->passwordHasher->hashPassword(
-                new User($faker->firstName,
-                    $faker->lastName,
-                    $faker->email,
-                    'password',
-                    $faker->phoneNumber,
-                    $faker->phoneNumber,
-                    $this->getReference("userType0")
-                ),
-                'password' // Default password for all users
-            ),
-            $faker->phoneNumber,
-            $faker->phoneNumber,
-            $this->getReference("userType0")
-        );
+        // Create an owner user
+        $owner = new User();
+        $owner->setFirstName('Owner');
+        $owner->setLastName('User');
+        $owner->setEmail('owner@example.com');
+        $owner->setRoles(['ROLE_OWNER']);
+        $owner->setPassword($this->passwordHasher->hashPassword($owner, 'ownerpassword'));
+        $owner->setPhoneNumber('0987654321');
+        $owner->setVerified(true);
+        $manager->persist($owner);
 
-        $manager->persist($user);
+        // Create a renter user
+        $renter = new User();
+        $renter->setFirstName('Renter');
+        $renter->setLastName('User');
+        $renter->setEmail('renter@example.com');
+        $renter->setRoles(['ROLE_RENTER']);
+        $renter->setPassword($this->passwordHasher->hashPassword($renter, 'renterpassword'));
+        $renter->setPhoneNumber('1122334455');
+        $renter->setVerified(true);
+        $manager->persist($renter);
+
+        // Save all the users to the database
         $manager->flush();
-    }
 
-    public function getDependencies()
-    {
-        return [
-            TransactionTypeFixtures::class,
-            UserTypeFixtures::class,
-        ];
+        // Reference for other fixtures
+        $this->addReference('user-admin', $admin);
+        $this->addReference('user-owner', $owner);
+        $this->addReference('user-renter', $renter);
     }
 }

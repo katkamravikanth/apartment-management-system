@@ -1,8 +1,3 @@
 framework:
-  mailer:
-    dsn: "%env(MAILER_DSN)%"
-    envelope:
-      sender: "noreply@ams.com"
-    headers:
-      From: "AMS <noreply@ams.com>"
-      X-Custom-Header: "AMS"
+    mailer:
+        dsn: '%env(MAILER_DSN)%'

@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MaintenanceRequest index{% endblock %}
+
+{% block body %}
+    <h1>MaintenanceRequest index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>CreatedAt</th>
+                <th>UpdatedAt</th>
+                <th>DeletedAt</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for maintenance_request in maintenance_requests %}
+            <tr>
+                <td>{{ maintenance_request.id }}</td>
+                <td>{{ maintenance_request.title }}</td>
+                <td>{{ maintenance_request.description }}</td>
+                <td>{{ maintenance_request.status }}</td>
+                <td>{{ maintenance_request.createdAt ? maintenance_request.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ maintenance_request.updatedAt ? maintenance_request.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ maintenance_request.deletedAt ? maintenance_request.deletedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_maintenance_request_show', {'id': maintenance_request.id}) }}">show</a>
+                    <a href="{{ path('app_maintenance_request_edit', {'id': maintenance_request.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_maintenance_request_new') }}">Create new</a>
+{% endblock %}

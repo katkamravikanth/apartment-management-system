@@ -9,60 +9,27 @@ security:
       entity:
         class: App\Entity\User
         property: email
-    api_user_provider:
-      entity:
-        class: App\Entity\User
-        property: email
-
   firewalls:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
-
-    login:
-      pattern: ^/api/login
-      stateless: true
-      provider: api_user_provider
-      json_login:
-        check_path: /api/login
-        username_path: email
-        password_path: password
-        success_handler: lexik_jwt_authentication.handler.authentication_success
-        failure_handler: lexik_jwt_authentication.handler.authentication_failure
-        # provider: app_user_provider
-
-    doc:
-      pattern: ^/api/doc
-      stateless: true
-      security: false
-
-    api:
-      pattern: ^/api
-      stateless: true
-      provider: api_user_provider
-      jwt: ~
-
     main:
       lazy: true
       provider: app_user_provider
-      entry_point: App\Security\AppLoginAuthenticator
-      form_login:
-        login_path: app_login
-        check_path: app_login
-        default_target_path: admin
+      custom_authenticator: App\Security\LoginFormAuthenticator
       logout:
         path: app_logout
-        target: app_login
+        target: app_home
         # where to redirect after logout
         # target: app_any_route
-      user_checker: App\Security\UserChecker
+
       remember_me:
-        secret: "%kernel.secret%" # required
-        lifetime: 604800 # 1 week in seconds
-        # by default, the feature is enabled by checking a
-        # checkbox in the login form (see below), uncomment the
-        # following line to always enable it.
-        # always_remember_me: true
+        secret: "%kernel.secret%"
+        lifetime: 604800
+        path: /
+        # by default, the feature is enabled by checking a checkbox in the
+        # login form, uncomment the following line to always enable it.
+        #always_remember_me: true
 
       # activate different ways to authenticate
       # https://symfony.com/doc/current/security.html#the-firewall
@@ -73,10 +40,8 @@ security:
   # Easy way to control access for large sections of your site
   # Note: Only the *first* access control that matches will be used
   access_control:
-    - { path: ^/admin, roles: [ROLE_USER, ROLE_ADMIN] }
+    # - { path: ^/admin, roles: ROLE_ADMIN }
     # - { path: ^/profile, roles: ROLE_USER }
-    - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
   security:
