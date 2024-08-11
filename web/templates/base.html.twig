@@ -42,6 +42,8 @@
                     <ul class="navbar-nav">
                         {% set currentPath = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
                         {% if app.user %}
+                            <li class="nav-item"><a href="{{ path('admin_dashboard') }}">Dashboard</a></li>
+                            <li class="nav-item"><a href="{{ path('admin_users') }}">Manage Users</a></li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
                             </li>
