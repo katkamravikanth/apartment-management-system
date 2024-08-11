@@ -75,13 +75,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Announcement::class)]
     private Collection $announcements;
 
-    public function __construct($name, $email, $password)
+    public function __construct($firstName, $lastName, $email, $password, $phone, $alternate_phone, UserType $user_type)
     {
-        $this->name = $name;
+        $this->firstName = $firstName;
+        $this->lastName = $lastName;
         $this->email = $email;
         $this->password = $password;
         $this->roles = ['ROLE_USER'];
         $this->status = true;
+        $this->phone = $phone;
+        $this->alternate_phone = $alternate_phone;
+        $this->user_type = $user_type;
         $this->flats = new ArrayCollection();
         $this->userFlatHistories = new ArrayCollection();
         $this->payerTransactions = new ArrayCollection();
@@ -189,12 +193,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?bool
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(bool $status): self
     {
         $this->status = $status;
 

@@ -3,12 +3,14 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
+use App\Entity\UserType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Faker\Factory;
 
-class UserFixtures extends Fixture
+class UserFixtures extends Fixture implements DependentFixtureInterface
 {
     private $passwordHasher;
 
@@ -21,18 +23,35 @@ class UserFixtures extends Fixture
     {
         $faker = Factory::create();
 
-        for ($i = 0; $i < 5; $i++) {
-            $user = new User();
-            $user->setEmail($faker->email);
-            $user->setPassword($this->passwordHasher->hashPassword(
-                $user,
+        $user = new User(
+            $faker->firstName,
+            $faker->lastName,
+            $faker->email,
+            $this->passwordHasher->hashPassword(
+                new User($faker->firstName,
+                    $faker->lastName,
+                    $faker->email,
+                    'password',
+                    $faker->phoneNumber,
+                    $faker->phoneNumber,
+                    $this->getReference("userType0")
+                ),
                 'password' // Default password for all users
-            ));
-            $user->setRoles(['ROLE_USER']);
+            ),
+            $faker->phoneNumber,
+            $faker->phoneNumber,
+            $this->getReference("userType0")
+        );
 
-            $manager->persist($user);
-        }
-
+        $manager->persist($user);
         $manager->flush();
+    }
+
+    public function getDependencies()
+    {
+        return [
+            TransactionTypeFixtures::class,
+            UserTypeFixtures::class,
+        ];
     }
 }

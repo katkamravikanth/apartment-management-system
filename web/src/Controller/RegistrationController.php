@@ -52,8 +52,7 @@ class RegistrationController extends AbstractController
                 )
             );
             $user->setRoles(['ROLE_USER']);
-            $user->setIsVerified(true);
-            $user->setIsActive(true);
+            $user->setStatus(true);
 
             $entityManager->persist($user);
             $entityManager->flush();
@@ -87,7 +86,7 @@ class RegistrationController extends AbstractController
 
         $user = $this->em->getRepository(User::class)->findOneBy(['email'=> $request->get('email')]);
 
-        // validate email confirmation link, sets User::isVerified=true and persists
+        // validate email confirmation link
         try {
             $this->emailVerifier->handleEmailConfirmation($request, $user);
         } catch (VerifyEmailExceptionInterface $exception) {

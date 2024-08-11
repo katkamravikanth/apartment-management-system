@@ -21,6 +21,9 @@ class UserType
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ORM\Column(type: "text")]
+    private ?string $description = null;
+
     #[ORM\OneToMany(mappedBy: 'user_type', targetEntity: User::class)]
     private Collection $users;
 
@@ -47,6 +50,18 @@ class UserType
     public function setName(string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }

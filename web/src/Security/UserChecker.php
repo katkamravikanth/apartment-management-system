@@ -16,7 +16,7 @@ class UserChecker implements UserCheckerInterface
             return;
         }
 
-        if (!$user->isActive() || $user->getDeletedAt() != null) {
+        if (!$user->getStatus() || $user->getDeletedAt() != null) {
             // the message passed to this exception is meant to be displayed to the user
             throw new CustomUserMessageAccountStatusException('Your user account no longer exists.');
         }
