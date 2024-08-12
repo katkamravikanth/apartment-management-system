@@ -7,35 +7,42 @@ use App\Entity\Invoice;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class InvoiceType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('amount')
+            ->add('amount', MoneyType::class, [
+                'constraints' => [
+                    new Assert\NotBlank(),
+                ],
+                'divisor' => 100,
+                'label' => 'Amount',
+                'row_attr' => ['class' => 'form-group'],
+                'attr' => ['class' => 'form-control']
+            ])
             ->add('dueDate', null, [
                 'widget' => 'single_text',
+                'row_attr' => ['class' => 'form-group'],
+                'attr' => ['class' => 'form-control']
             ])
             ->add('status')
-            ->add('createdAt', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('updatedAt', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('deletedAt', null, [
-                'widget' => 'single_text',
-            ])
             ->add('renter', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => 'id',
+                'choice_label' => 'fullName',
+                'row_attr' => ['class' => 'form-group'],
+                'attr' => ['class' => 'form-control']
             ])
             ->add('apartment', EntityType::class, [
                 'class' => Apartment::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
+                'row_attr' => ['class' => 'form-group'],
+                'attr' => ['class' => 'form-control']
             ])
         ;
     }
