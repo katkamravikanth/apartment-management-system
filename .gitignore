@@ -3,8 +3,10 @@
 .DS_Store
 
 # Application
+web/.env
 web/composer.lock
 web/symfony.lock
+web/node_modules/
 web/var/
 web/vendor/
 data/
