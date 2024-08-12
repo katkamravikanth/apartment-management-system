@@ -5,8 +5,10 @@ namespace App\Form;
 use App\Entity\Apartment;
 use App\Entity\Invoice;
 use App\Entity\User;
+use App\Enum\InvoiceStatus;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -31,7 +33,17 @@ class InvoiceType extends AbstractType
                 'row_attr' => ['class' => 'form-group'],
                 'attr' => ['class' => 'form-control']
             ])
-            ->add('status')
+            ->add('status', ChoiceType::class, [
+                'choices' => [
+                    'Pending' => InvoiceStatus::PENDING,
+                    'Paid' => InvoiceStatus::PAID,
+                    'Overdue' => InvoiceStatus::OVERDUE,
+                    'Cancelled' => InvoiceStatus::CANCELLED,
+                ],
+                'label' => 'Status',
+                'row_attr' => ['class' => 'form-group'],
+                'attr' => ['class' => 'form-control']
+            ])
             ->add('renter', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'fullName',

@@ -45,21 +45,6 @@ class LeaseType extends AbstractType
                 'row_attr' => ['class' => 'form-group'],
                 'attr' => ['class' => 'form-control']
             ])
-            ->add('createdAt', null, [
-                'widget' => 'single_text',
-                'row_attr' => ['class' => 'form-group'],
-                'attr' => ['class' => 'form-control']
-            ])
-            ->add('updatedAt', null, [
-                'widget' => 'single_text',
-                'row_attr' => ['class' => 'form-group'],
-                'attr' => ['class' => 'form-control']
-            ])
-            ->add('deletedAt', null, [
-                'widget' => 'single_text',
-                'row_attr' => ['class' => 'form-group'],
-                'attr' => ['class' => 'form-control']
-            ])
             ->add('renter', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'fullName',

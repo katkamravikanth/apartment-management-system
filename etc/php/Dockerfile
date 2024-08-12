@@ -16,6 +16,11 @@ RUN apt update \
     && docker-php-ext-configure gd \
     && docker-php-ext-install gd
 
+RUN apt install -y nodejs npm
+
+RUN apt purge -y --auto-remove
+RUN npm install -g yarn
+
 WORKDIR /var/www/html
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\MaintenanceRequestStatus;
 use App\Repository\MaintenanceRequestRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -23,8 +24,8 @@ class MaintenanceRequest
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private ?string $status = null;
+    #[ORM\Column(type: 'string', enumType: MaintenanceRequestStatus::class)]
+    private MaintenanceRequestStatus $status = MaintenanceRequestStatus::OPEN;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'maintenanceRequests')]
     private ?User $requester = null;
@@ -61,12 +62,12 @@ class MaintenanceRequest
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?MaintenanceRequestStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(MaintenanceRequestStatus $status): self
     {
         $this->status = $status;
 

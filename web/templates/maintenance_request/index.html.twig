@@ -24,7 +24,7 @@
                 <td>{{ maintenance_request.id }}</td>
                 <td>{{ maintenance_request.title }}</td>
                 <td>{{ maintenance_request.description }}</td>
-                <td>{{ maintenance_request.status }}</td>
+                <td>{{ maintenance_request.status.value }}</td>
                 <td>{{ maintenance_request.createdAt ? maintenance_request.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ maintenance_request.updatedAt ? maintenance_request.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ maintenance_request.deletedAt ? maintenance_request.deletedAt|date('Y-m-d H:i:s') : '' }}</td>

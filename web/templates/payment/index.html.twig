@@ -24,7 +24,7 @@
                 <td>{{ payment.id }}</td>
                 <td>{{ payment.amount }}</td>
                 <td>{{ payment.date ? payment.date|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ payment.status }}</td>
+                <td>{{ payment.status.value }}</td>
                 <td>{{ payment.createdAt ? payment.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ payment.updatedAt ? payment.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ payment.deletedAt ? payment.deletedAt|date('Y-m-d H:i:s') : '' }}</td>

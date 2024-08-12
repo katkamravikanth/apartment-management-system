@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\InvoiceStatus;
 use App\Repository\InvoiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,8 +26,8 @@ class Invoice
     #[ORM\Column]
     private ?\DateTimeImmutable $dueDate = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    #[ORM\Column(type: 'string', enumType: InvoiceStatus::class)]
+    private InvoiceStatus $status = InvoiceStatus::PENDING;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'invoices')]
     private ?User $renter = null;
@@ -72,12 +73,12 @@ class Invoice
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?InvoiceStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(InvoiceStatus $status): static
     {
         $this->status = $status;
 

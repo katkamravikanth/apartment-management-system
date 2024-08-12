@@ -24,7 +24,7 @@
                 <td>{{ invoice.id }}</td>
                 <td>{{ invoice.amount }}</td>
                 <td>{{ invoice.dueDate ? invoice.dueDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ invoice.status }}</td>
+                <td>{{ invoice.status.value }}</td>
                 <td>{{ invoice.createdAt ? invoice.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ invoice.updatedAt ? invoice.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ invoice.deletedAt ? invoice.deletedAt|date('Y-m-d H:i:s') : '' }}</td>

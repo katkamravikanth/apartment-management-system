@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\PaymentStatus;
 use App\Repository\PaymentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -23,8 +24,8 @@ class Payment
     #[ORM\Column]
     private ?\DateTimeImmutable $date = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    #[ORM\Column(type: 'string', enumType: PaymentStatus::class)]
+    private PaymentStatus $status = PaymentStatus::PENDING;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'payments')]
     private ?User $renter = null;
@@ -64,12 +65,12 @@ class Payment
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?PaymentStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(PaymentStatus $status): self
     {
         $this->status = $status;
 

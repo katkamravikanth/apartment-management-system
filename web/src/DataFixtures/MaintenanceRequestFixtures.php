@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\MaintenanceRequest;
+use App\Enum\MaintenanceRequestStatus;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -14,7 +15,7 @@ class MaintenanceRequestFixtures extends Fixture implements DependentFixtureInte
         $maintenanceRequest = new MaintenanceRequest();
         $maintenanceRequest->setTitle('Leaky Faucet');
         $maintenanceRequest->setDescription('The faucet in the kitchen is leaking.');
-        $maintenanceRequest->setStatus('Open');
+        $maintenanceRequest->setStatus(MaintenanceRequestStatus::OPEN);
         $maintenanceRequest->setRequester($this->getReference('user-renter'));
         $maintenanceRequest->setApartment($this->getReference('apartment-1a'));
         $manager->persist($maintenanceRequest);
