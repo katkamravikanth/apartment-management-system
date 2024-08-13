@@ -14,15 +14,34 @@ Encore
   // only needed for CDN's or subdirectory deploy
   //.setManifestKeyPrefix('build/')
 
+  // Copy images to the build directory
+  .copyFiles({
+    from: './assets/images',
+    to: 'images/[path][name].[hash:8].[ext]',
+  })
+
   /*
    * ENTRY CONFIG
    *
    * Each entry will result in one JavaScript file (e.g. app.js)
    * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
    */
-  .addEntry("jquery", "./assets/jquery-3.6.0.min.js")
-  .addEntry("app", "./assets/app.js")
-  .addStyleEntry("global", "./assets/styles/app.css")
+  .addEntry("app", "./assets/js/app.js")
+  .addEntry("charts", "./assets/js/charts.js")
+  .addEntry("color-modes", "./assets/js/color-modes.js")
+  .addEntry("config", "./assets/js/config.js")
+  .addEntry("main", "./assets/js/main.js")
+  .addEntry("popovers", "./assets/js/popovers.js")
+  .addEntry("simplebar", "./assets/js/simplebar.min.js")
+  .addEntry("toasts", "./assets/js/toasts.js")
+  .addEntry("tooltips", "./assets/js/tooltips.js")
+  .addEntry("widgets", "./assets/js/widgets.js")
+
+  .addStyleEntry("global", "./assets/css/app.css")
+  .addStyleEntry("ads", "./assets/css/ads.min.css")
+  .addStyleEntry("examples", "./assets/css/examples.min.css")
+  .addStyleEntry("style", "./assets/css/style.min.css")
+  .addStyleEntry("simplebar-css", "./assets/css/vendors/simplebar.css")
 
   // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
   .splitEntryChunks()
